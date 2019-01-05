@@ -4,7 +4,9 @@
 package com.natork.sql.migrate.git;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,13 +58,21 @@ public class GitServer {
 	 * @param name
 	 */
 	public void createRepo(String name) {
-		File repoDir = new File(repoRoot + "/" + name);
+	    String repoDirPath = repoRoot + "/" + name;
+		File repoDir = new File(repoDirPath);
 		if(! repoDir.exists()) {
 			repoDir.mkdirs();
+			String readme = "readme.md";
+			this.writeFile(repoDirPath + File.separator + readme, name + "'s sql changelogs.");
 			try {
 				Git.init().setDirectory(repoDir).call();
-				LOGGER.warn("Repo '{}' is creaated.", name);
-			} catch (IllegalStateException | GitAPIException e) {
+				Git git = Git.open(repoDir);
+				git.add().addFilepattern(readme).call();
+				git.commit().setMessage("Add readme.").call();
+				git.close();
+				LOGGER.info("Repo '{}' is created.", name);
+				this.registerRepo(name);
+			} catch (IllegalStateException | GitAPIException | IOException e) {
 				LOGGER.error("Create repo {} error.", name, e);
 			}
 		} else {
@@ -84,6 +94,11 @@ public class GitServer {
 			LOGGER.warn("Repo '{}' is not exists.", name);
 			throw new RepositoryNotExistException(name);
 		}
+	}
+	
+	public GitRepo get(String name) {
+		LazilyLoadedRepository lazilyRepo = this.repositories.get(name);
+		return lazilyRepo != null ? new GitRepo(name) : null;
 	}
 	
 	public GitServlet getGitServlet() {
@@ -125,6 +140,23 @@ public class GitServer {
 		for(File file : repoRootDir.listFiles()) {
 			this.registerRepo(file);
 		}
+	}
+	
+	private void writeFile(String filePath, String content) {
+	    File file = new File(filePath);
+	    try (OutputStream os = new FileOutputStream(file)) {
+
+	        // if file doesn't exists, then create it
+	        if ( ! file.exists() ) {
+	         file.createNewFile();
+	        }
+	        os.write(content.getBytes());
+	        os.flush();
+	        os.close();
+	       } catch (IOException e) {
+	           LOGGER.error("Write file error: {}", filePath);
+	           throw new RepositoryFileWriteErrorException("Write file error: " + filePath, e);
+	       }
 	}
 	
 	/**

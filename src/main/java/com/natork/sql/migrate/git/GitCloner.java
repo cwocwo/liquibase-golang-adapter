@@ -8,17 +8,18 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
-import java.util.logging.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GitCloner {
 
-    private static final Logger LOGGER = Logger.getLogger(GitCloner.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(GitCloner.class.getName());
 
     private final String repositoryName;
     private final String repositoryUrl;
@@ -59,7 +60,7 @@ public class GitCloner {
             checkoutAllBranches(repository);
         }
 
-        LOGGER.info("Cloned test repository to: " + targetFolder);
+        LOGGER.info("Cloned {} repository to {} ", repositoryName, targetFolder);
         return repository;
     }
 
@@ -85,7 +86,7 @@ public class GitCloner {
             try {
                 git.checkout().setCreateBranch(true).setName(branchName).setStartPoint("origin/" + branchName).call();
             } catch (RefAlreadyExistsException e) {
-                LOGGER.warning("Already exists, so ignoring " + e.getMessage());
+                LOGGER.warn("Already exists, so ignoring " + e.getMessage());
             }
         }
     }

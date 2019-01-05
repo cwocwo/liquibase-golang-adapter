@@ -17,15 +17,15 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class GitServerConfig {
-	
-	@Autowired
-	private GitServer gitServer;
-	
-	@Bean
-	ServletRegistrationBean<GitServlet> gitServletRegistration() {
-		ServletRegistrationBean<GitServlet> srb = new ServletRegistrationBean<GitServlet>();
-		srb.setServlet(gitServer.getGitServlet());
-		srb.setUrlMappings(Arrays.asList("/git/*"));
-		return srb;
-	}
+
+    @Autowired
+    private GitServer gitServer;
+
+    @Bean
+    ServletRegistrationBean<GitServlet> gitServletRegistration() {
+        ServletRegistrationBean<GitServlet> srb = new ServletRegistrationBean<GitServlet>();
+        srb.setServlet(gitServer.getGitServlet());
+        srb.setUrlMappings(Arrays.asList("/git/*"));
+        return srb;
+    }
 }

@@ -8,13 +8,21 @@ package com.natork.sql.migrate.git;
  *
  */
 public class GitRepo {
-	private String name;
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    public GitRepo() {
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    }
+
+    public GitRepo(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
