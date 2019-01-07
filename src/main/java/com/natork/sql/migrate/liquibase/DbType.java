@@ -3,21 +3,22 @@
  */
 package com.natork.sql.migrate.liquibase;
 
+import org.springframework.util.StringUtils;
+
 /**
  * @author caiweiwei
  *
  */
 public enum DbType {
 	MYSQL {
-
-		@Override
-		String getJdbcUrl(DataSource dataSource) {
-			return "jdbc:mysql://" + dataSource.getHost() + ":"
-					+ dataSource.getPort() + "/" + dataSource.getDatabase()
-					+ "?" + dataSource.getParameters() == null ? "" : dataSource.getParameters();
-		}
-		
-	};
-	
-	abstract String getJdbcUrl(DataSource dataSource);
+	},
+    
+	POSTGRESQL {
+    };
+	public String getJdbcUrl(DataSource dataSource) {
+	    String jdbcUrl = "jdbc:" + this.name().toLowerCase() + "://" + dataSource.getHost() + ":"
+                + dataSource.getPort() + "/" + dataSource.getDatabase()
+                + (StringUtils.isEmpty(dataSource.getParameters()) ? "" : "?" + dataSource.getParameters());
+	    return jdbcUrl;
+	}
 }

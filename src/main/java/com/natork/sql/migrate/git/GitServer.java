@@ -113,7 +113,7 @@ public class GitServer {
             if (repositories.containsKey(trimmedName)) {
                 final LazilyLoadedRepository lazilyLoadedRepository = repositories.get(trimmedName);
                 synchronized (gitServlet) {
-                    lazilyLoadedRepository.cloneRepository();
+                    lazilyLoadedRepository.openRepository();
                     final Repository repository = lazilyLoadedRepository.get();
                     enableInsecureReceiving(repository);
                     repository.incrementOpen();

@@ -30,12 +30,14 @@ public class MigrateService {
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(MigrateService.class);
 	
+	private static String CHANGELOG_DIR = "db" + File.separator + "changelog";
+	
 	@Value("${jgit.reporoot}")
 	private String repoRoot;
 	
-	public void migrate(String changeLog, String contexts, DataSource dataSource) {
+	public void migrate(String changeLog, String contexts, DataSource dataSource) throws DatabaseMigrateException {
 		this.checkDataSource(dataSource);
-		String changeLogLocation = this.repoRoot + "/" + changeLog;
+		String changeLogLocation = this.repoRoot + File.separator + changeLog + File.separator + CHANGELOG_DIR;
 		this.checkChangelog(changeLogLocation);
 		String jdbcUrl = dataSource.getDbType().getJdbcUrl(dataSource);
 		LOGGER.info("The databse url is: '{}'.", jdbcUrl);
@@ -51,7 +53,8 @@ public class MigrateService {
 		}
 		try {
 		    Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(c));
-		    Liquibase liquibase = new Liquibase(changeLogLocation, new FileSystemResourceAccessor(), database);
+		    Liquibase liquibase = new Liquibase(changeLogLocation + File.separator + "db.changelog-master.yaml", 
+		            new FileSystemResourceAccessor(this.repoRoot + File.separator + changeLog), database);
 		    liquibase.update(contexts);
 		} catch (DatabaseException e) {
 			DatabaseMigrateException wrappedException = new DatabaseMigrateException(e);
@@ -72,7 +75,7 @@ public class MigrateService {
 		}
 	}
 	
-	private void checkChangelog(String changeLogLocation) {
+	private void checkChangelog(String changeLogLocation) throws DatabaseMigrateException {
 		File file = new File(changeLogLocation);
 		if(! file.exists()) {
 			LOGGER.error("Changelog file '{}' not exists.", changeLogLocation);
@@ -84,7 +87,7 @@ public class MigrateService {
 		}
 	}
 	
-	private void checkDataSource(DataSource dataSource) {
+	private void checkDataSource(DataSource dataSource) throws DatabaseMigrateException {
 		String errMessage = "";
 		
 		if(dataSource.getDbType() == null) {

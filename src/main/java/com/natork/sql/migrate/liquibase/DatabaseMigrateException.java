@@ -8,7 +8,7 @@ package com.natork.sql.migrate.liquibase;
  *
  */
 @SuppressWarnings("serial")
-public class DatabaseMigrateException extends RuntimeException {
+public class DatabaseMigrateException extends Exception {
 
 	public DatabaseMigrateException(String message, Throwable cause) {
 		super(message, cause);

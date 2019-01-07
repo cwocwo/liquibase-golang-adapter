@@ -1,41 +1,42 @@
 package com.natork.sql.migrate.git;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 
 class LazilyLoadedRepository {
-
-    private final GitCloner gitCloner;
+    private String repositoryUrl;
+    private String repositoryName;
     private Optional<Repository> repository;
 
     LazilyLoadedRepository(String name, String repositoryUrl) {
-        this.gitCloner = new GitCloner(name, repositoryUrl);
+        this.repositoryName = name;
+        this.repositoryUrl = repositoryUrl;
         this.repository = Optional.empty();
     }
 
     Repository get() {
-        cloneRepository();
+        openRepository();
         return repository.get();
     }
 
-    void close() {
-        this.gitCloner.removeClone();
-    }
+   
 
     String getName() {
-        return this.gitCloner.getRepositoryName();
+        return this.repositoryName;
     }
 
-    void cloneRepository() {
+    void openRepository() {
         try {
             if (!repository.isPresent()) {
-                this.repository = Optional.of(gitCloner.cloneRepositoryToTempFolder(true));
+                Repository repo = Git.open(new File(this.repositoryUrl)).getRepository();
+                this.repository = Optional.of(repo);
             }
-        } catch (GitAPIException | IOException e) {
-            throw new RuntimeException("Failed cloning repository [" + gitCloner.getRepositoryName() + ", " + gitCloner.getRepositoryUrl() + "].", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed openning repository [" + this.repositoryName + ", " + this.repositoryUrl + "].", e);
         }
 
     }
