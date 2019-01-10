@@ -7,12 +7,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * @author caiweiwei
  *
  */
+@Ignore
 public class JdbcConnectionTest {
 
     @Test

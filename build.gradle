@@ -23,6 +23,9 @@ sourceCompatibility = 1.8
 
 repositories {
 	maven {url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+    flatDir {
+        dirs 'libs'
+    }
 	mavenCentral()
 }
 
@@ -41,6 +44,9 @@ dependencies {
 
 	
 	runtimeOnly('org.liquibase:liquibase-core')
+    runtimeOnly name:"liquibase-schema-3.6"
+    
+    
 	runtimeOnly('com.h2database:h2')
 	runtimeOnly('org.postgresql:postgresql')
 	compileOnly('org.projectlombok:lombok')
