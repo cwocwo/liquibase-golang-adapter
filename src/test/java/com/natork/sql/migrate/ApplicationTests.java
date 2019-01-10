@@ -1,11 +1,12 @@
 package com.natork.sql.migrate;
 
 import org.eclipse.jgit.lib.Repository;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.natork.sql.migrate.git.GitCloner;
 
-
+@Ignore
 public class ApplicationTests {
 
 	@Test
