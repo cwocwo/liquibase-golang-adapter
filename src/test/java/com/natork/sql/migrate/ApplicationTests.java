@@ -1,6 +1,5 @@
 package com.natork.sql.migrate;
 
-import org.eclipse.jgit.lib.Repository;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -12,7 +11,7 @@ public class ApplicationTests {
 	@Test
 	public void testDefaultSettings() throws Exception {
 		GitCloner gitCloner = new GitCloner("http://localhost:8090/git/test");
-		Repository repository = gitCloner.cloneRepositoryToTempFolder(true);
+		gitCloner.cloneRepositoryToTempFolder(true);
 	}
 
 	@Test
